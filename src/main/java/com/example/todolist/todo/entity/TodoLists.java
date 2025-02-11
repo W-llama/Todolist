@@ -1,14 +1,21 @@
 package com.example.todolist.todo.entity;
 
-import com.example.todolist.event.entity.Agendas;
+import com.example.todolist.calendar.entity.Calendar;
+import com.example.todolist.global.Timestamp;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
-public class TodoLists {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class TodoLists extends Timestamp {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,9 +35,8 @@ public class TodoLists {
     private LocalDateTime dueTime;
 
     @Column
-    private String priority;
+    private String tag;
 
-    @ManyToOne
-    private Agendas agendas;
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Calendar calendar;
 }
