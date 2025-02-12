@@ -7,11 +7,16 @@ import com.example.todolist.calendar.entity.Calendar;
 import com.example.todolist.calendar.entity.CalendarUser;
 import com.example.todolist.calendar.repository.CalendarRepository;
 import com.example.todolist.calendar.repository.CalendarUserRepository;
+import com.example.todolist.global.excetion.CustomException;
+import com.example.todolist.global.excetion.ErrorCode;
 import com.example.todolist.user.entity.User;
 import com.example.todolist.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +29,7 @@ public class CalendarService {
     private final CalendarUserRepository calendarUserRepository;
 
     @Transactional
-    public CalendarResponseDto makecalendar(CalendarRequestDto calendarRequestDto,  UserDetailsImpl userDetails) {
+    public CalendarResponseDto createCalendar(CalendarRequestDto calendarRequestDto,  UserDetailsImpl userDetails) {
 
         User user = userDetails.getUser();
 
@@ -53,4 +58,38 @@ public class CalendarService {
                 .location(calendar.getLocation())
                 .build();
     }
+
+    @Transactional
+    public List<CalendarResponseDto> getCalendar() {
+        List<Calendar> calendars = calendarRepository.findAll();
+
+        return calendars.stream()
+                .map(calendar -> CalendarResponseDto.builder()
+                        .id(calendar.getId())
+                        .title(calendar.getTitle())
+                        .description(calendar.getDescription())
+                        .location(calendar.getLocation())
+                        .startDate(calendar.getStartDate())
+                        .endDate(calendar.getEndDate())
+                        .build()
+                )
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public CalendarResponseDto getCalendarById(Long id) {
+        Calendar calendar = calendarRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_CALENDAR));
+
+        return CalendarResponseDto.builder()
+                .id(calendar.getId())  // ID 추가
+                .title(calendar.getTitle())
+                .description(calendar.getDescription())
+                .location(calendar.getLocation())
+                .startDate(calendar.getStartDate())
+                .endDate(calendar.getEndDate())
+                .build();
+    }
+
+
 }

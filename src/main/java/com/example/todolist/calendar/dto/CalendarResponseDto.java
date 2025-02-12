@@ -13,6 +13,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class CalendarResponseDto {
 
+    private Long id;
     private String title;
     private String description;
     private String location;

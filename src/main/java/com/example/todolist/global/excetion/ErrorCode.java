@@ -25,7 +25,9 @@ public enum ErrorCode {
     DUPLICATE_USERNAME(HttpStatus.BAD_REQUEST, "중복된 유저아이디입니다."),
     DUPLICATE_EMAIL(HttpStatus.BAD_REQUEST, "이미 가입된 이메일입니다." ),
     SIGNUP_FAILED(HttpStatus.BAD_REQUEST, "회원가입에 실패하셨습니다."), 
-    INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호는 최소 8자 이상, 15자 이하이며 알파벳 대소문자(a~z, A~Z), 숫자(0~9), 특수문자로 이루어져 있어야 합니다.");
+    INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호는 최소 8자 이상, 15자 이하이며 알파벳 대소문자(a~z, A~Z), 숫자(0~9), 특수문자로 이루어져 있어야 합니다."),
+    NOT_FOUND_CALENDAR(HttpStatus.NOT_FOUND,"해당 일정이 존재하지 않습니다: " )
+    ;
     private final HttpStatus status;
     private final String message;
 }
