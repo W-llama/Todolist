@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter @Setter @Builder
+@Getter @Builder
 @NoArgsConstructor @AllArgsConstructor
 public class User extends Timestamp {
 
