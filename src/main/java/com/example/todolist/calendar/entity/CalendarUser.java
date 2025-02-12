@@ -6,7 +6,6 @@ import lombok.*;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -18,10 +17,16 @@ public class CalendarUser {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "calendar_id")
+    @JoinColumn(name = "calendar_id", nullable = false)
     private Calendar calendar;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    public CalendarUser(Calendar calendar, User user) {
+        this.calendar = calendar;
+        this.user = user;
+    }
 }
+

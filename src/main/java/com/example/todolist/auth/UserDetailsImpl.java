@@ -5,34 +5,40 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
-public class UserDetailsImpl implements UserDetails {
-
-    private final User user;
+public class UserDetailsImpl implements UserDetails, Serializable {
+    private final Long userId;
+    private final String username;
+    private final String password;
+    private final Collection<? extends GrantedAuthority> authorities;
 
     public UserDetailsImpl(User user) {
-        this.user = user;
+        this.userId = user.getId();
+        this.username = user.getUsername();
+        this.password = user.getPassword();
+        this.authorities = List.of(new SimpleGrantedAuthority(user.getRole().name()));
     }
 
-    public User getUser() {
-        return this.user;
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(user.getRole().name()));
-    }
-
-    @Override
-    public String getPassword() {
-        return user.getPassword();
+    public Long getUserId() {
+        return userId;
     }
 
     @Override
     public String getUsername() {
-        return user.getUsername();
+        return username;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return authorities;
     }
 
     @Override

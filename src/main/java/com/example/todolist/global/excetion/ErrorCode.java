@@ -25,7 +25,16 @@ public enum ErrorCode {
     DUPLICATE_USERNAME(HttpStatus.BAD_REQUEST, "중복된 유저아이디입니다."),
     DUPLICATE_EMAIL(HttpStatus.BAD_REQUEST, "이미 가입된 이메일입니다." ),
     SIGNUP_FAILED(HttpStatus.BAD_REQUEST, "회원가입에 실패하셨습니다."), 
-    INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호는 최소 8자 이상, 15자 이하이며 알파벳 대소문자(a~z, A~Z), 숫자(0~9), 특수문자로 이루어져 있어야 합니다.");
+    INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호는 최소 8자 이상, 15자 이하이며 알파벳 대소문자(a~z, A~Z), 숫자(0~9), 특수문자로 이루어져 있어야 합니다."),
+
+    NOT_FOUND_CALENDAR(HttpStatus.NOT_FOUND,"해당 일정이 존재하지 않습니다: " ),
+    NO_CALENDAR_UPDATE_PERMISSION(HttpStatus.UNAUTHORIZED,"일정 수정 권한이 없습니다." ),
+    NO_CALENDAR_DELETE_PERMISSION(HttpStatus.UNAUTHORIZED,"일정 삭제 권한이 없습니다." ),
+
+    NOT_FOUND_TODO(HttpStatus.FORBIDDEN,"존재하지 않은 할 일입니다." ),
+    NO_TODO_UPDATE_PERMISSION(HttpStatus.UNAUTHORIZED,"할일 수정 권한이 없습니다." ),
+    NO_TODO_DELETE_PERMISSION(HttpStatus.UNAUTHORIZED,"할일 수정 권한이 없습니다." ),
+    ;
     private final HttpStatus status;
     private final String message;
 }

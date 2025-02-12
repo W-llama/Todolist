@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter @Setter @Builder
+@Getter @Builder
 @NoArgsConstructor @AllArgsConstructor
 public class User extends Timestamp {
 
@@ -34,6 +34,7 @@ public class User extends Timestamp {
     @Column(nullable = false)
     private UserRole role;
 
+    @Setter
     @Embedded
     private TokenStore tokenStore;
 
@@ -42,5 +43,4 @@ public class User extends Timestamp {
             this.tokenStore.clearTokens();
         }
     }
-
 }
