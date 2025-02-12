@@ -28,14 +28,14 @@ public class CalendarController {
         return ResponseEntity.ok(new CommonResponse<>("일정 생성 완료", 200, responseDto));
     }
 
-    @GetMapping("/read")
+    @GetMapping("/readcalendar")
     public ResponseEntity<CommonResponse<List<CalendarResponseDto>>> readCalendar(
     ){
         List<CalendarResponseDto> responseDto =calendarService.getCalendar();
         return ResponseEntity.ok(new CommonResponse<>("일정 조회 완료",200, responseDto));
     }
 
-    @GetMapping("/read/{id}")
+    @GetMapping("/readcalendar/{id}")
     public ResponseEntity<CommonResponse<CalendarResponseDto>> readCalendarById(
             @PathVariable Long id
     ){
@@ -43,7 +43,7 @@ public class CalendarController {
         return ResponseEntity.ok(new CommonResponse<>("일정 조회 완료",200, response));
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/updatecalendar/{id}")
     public ResponseEntity<CommonResponse<CalendarResponseDto>> updateCalendar(
             @PathVariable Long id,
             @RequestBody CalendarRequestDto calendarRequestDto,
@@ -53,7 +53,7 @@ public class CalendarController {
         return ResponseEntity.ok(new CommonResponse<>("일정 수정 완료",200, response));
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/deletecalendar/{id}")
     public ResponseEntity<CommonResponse<CalendarResponseDto>> deleteCalendar(
             @PathVariable Long id,
             @AuthenticationPrincipal UserDetailsImpl userDetails

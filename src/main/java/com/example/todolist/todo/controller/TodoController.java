@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/todo/{calendarId}")
+@RequestMapping("/{calendarId}/todo")
 @RequiredArgsConstructor
 public class TodoController {
 
     private final TodoService todoService;
 
-    @PostMapping("todo")
+    @PostMapping
     public ResponseEntity<CommonResponse<TodoResponseDto>> createTodo(
             @PathVariable Long calendarId,
             @RequestBody TodoRequestDto todoRequestDto) {
@@ -27,19 +27,19 @@ public class TodoController {
         return ResponseEntity.ok(new CommonResponse<>("할 일 생성 완료", 200, responseDto));
     }
 
-    @GetMapping("/todos")
+    @GetMapping("/readtodo")
     public ResponseEntity<CommonResponse<List<TodoResponseDto>>> getTodos(@PathVariable Long calendarId) {
         List<TodoResponseDto> todos = todoService.getTodos(calendarId);
         return ResponseEntity.ok(new CommonResponse<>("할 일 목록 조회 완료", 200, todos));
     }
 
-    @GetMapping("/{todoId}")
+    @GetMapping("/readtodo/{todoId}")
     public ResponseEntity<CommonResponse<TodoResponseDto>> getTodoById(@PathVariable Long todoId) {
         TodoResponseDto todo = todoService.getTodoById(todoId);
         return ResponseEntity.ok(new CommonResponse<>("할 일 조회 완료", 200, todo));
     }
 
-    @PutMapping("/{todoId}")
+    @PutMapping("/updatetodo/{todoId}")
     public ResponseEntity<CommonResponse<TodoResponseDto>> updateTodo(
             @PathVariable Long todoId,
             @RequestBody TodoRequestDto todoRequestDto,
@@ -48,7 +48,7 @@ public class TodoController {
         return ResponseEntity.ok(new CommonResponse<>("할 일 수정 완료", 200, updatedTodo));
     }
 
-    @DeleteMapping("/{todoId}")
+    @DeleteMapping("/deletetodo/{todoId}")
     public ResponseEntity<CommonResponse<Void>> deleteTodo(
             @PathVariable Long todoId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
