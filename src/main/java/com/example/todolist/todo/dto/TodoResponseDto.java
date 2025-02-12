@@ -1,8 +1,10 @@
 package com.example.todolist.todo.dto;
 
-import com.example.todolist.global.Timestamp;
 import com.example.todolist.todo.entity.TodoLists;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -10,7 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class TodoResponseDto extends Timestamp {
+public class TodoResponseDto{
 
     private Long id;
     private String title;

@@ -1,7 +1,6 @@
 package com.example.todolist.todo.entity;
 
 import com.example.todolist.calendar.entity.Calendar;
-import com.example.todolist.global.Timestamp;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TodoLists extends Timestamp {
+public class TodoLists {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/{calendarId}/todo")
+@RequestMapping("/api/{calendarId}/todo")
 @RequiredArgsConstructor
 public class TodoController {
 
