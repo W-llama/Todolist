@@ -38,5 +38,14 @@ public class TodoLists extends Timestamp {
     private String tag;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "calendar_id", nullable = false)
     private Calendar calendar;
+
+    public void updateTodo(String title, String description, String tag, LocalDateTime startTime, LocalDateTime dueTime) {
+        if (title != null) this.title = title;
+        if (description != null) this.description = description;
+        if (tag != null) this.tag = tag;
+        if (startTime != null) this.startTime = startTime;
+        if (dueTime != null) this.dueTime = dueTime;
+    }
 }

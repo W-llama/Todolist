@@ -22,9 +22,7 @@ import java.util.List;
 public class CalendarService {
 
     private final CalendarRepository calendarRepository;
-
     private final UserRepository userRepository;
-
     private final CalendarUserRepository calendarUserRepository;
 
     @Transactional
@@ -69,6 +67,7 @@ public class CalendarService {
 
     @Transactional
     public CalendarResponseDto updateCalendarById(CalendarRequestDto calendarRequestDto, UserDetailsImpl userDetails, Long id) {
+
         Calendar calendar = calendarRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_CALENDAR));
 
