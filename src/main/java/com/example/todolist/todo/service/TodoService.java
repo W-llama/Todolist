@@ -21,7 +21,7 @@ public class TodoService {
     private final CalendarRepository calendarRepository;
 
     @Transactional
-    public TodoResponseDto maketodo(Long calendarId ,TodoRequestDto todoRequestDto) {
+    public TodoResponseDto createTodo(Long calendarId ,TodoRequestDto todoRequestDto) {
 
         Calendar calendar = calendarRepository.findById(calendarId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));

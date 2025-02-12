@@ -17,11 +17,11 @@ public class TodoController {
     private final TodoService todoService;
 
     @PostMapping("/{calendarId}/todo")
-    public ResponseEntity<CommonResponse<TodoResponseDto>> maketodo(
+    public ResponseEntity<CommonResponse<TodoResponseDto>> createTodo(
             @PathVariable Long calendarId,
             @RequestBody TodoRequestDto todoRequestDto
     ){
-        TodoResponseDto responseDto = todoService.maketodo(calendarId,todoRequestDto);
+        TodoResponseDto responseDto = todoService.createTodo(calendarId,todoRequestDto);
         return ResponseEntity.ok(new CommonResponse<>("일정 생성완료", 200, responseDto));
     }
 }
