@@ -42,4 +42,23 @@ public class CalendarController {
         CalendarResponseDto response = calendarService.getCalendarById(id);
         return ResponseEntity.ok(new CommonResponse<>("일정 조회 완료",200, response));
     }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<CommonResponse<CalendarResponseDto>> updateCalendar(
+            @PathVariable Long id,
+            @RequestBody CalendarRequestDto calendarRequestDto,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ){
+        CalendarResponseDto response = calendarService.updateCalendarById(calendarRequestDto,userDetails ,id);
+        return ResponseEntity.ok(new CommonResponse<>("일정 수정 완료",200, response));
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<CommonResponse<CalendarResponseDto>> deleteCalendar(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ){
+        CalendarResponseDto response = calendarService.deleteCalendarById(userDetails ,id);
+        return ResponseEntity.ok(new CommonResponse<>("일정 삭제 완료",200, response));
+    }
 }

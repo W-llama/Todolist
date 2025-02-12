@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,9 +28,10 @@ public class CalendarService {
     private final CalendarUserRepository calendarUserRepository;
 
     @Transactional
-    public CalendarResponseDto createCalendar(CalendarRequestDto calendarRequestDto,  UserDetailsImpl userDetails) {
+    public CalendarResponseDto createCalendar(CalendarRequestDto calendarRequestDto, UserDetailsImpl userDetails) {
 
-        User user = userDetails.getUser();
+        User user = userRepository.findById(userDetails.getUserId())
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USERNAME));
 
         Calendar calendar = Calendar.builder()
                 .title(calendarRequestDto.getTitle())
@@ -43,20 +43,10 @@ public class CalendarService {
 
         calendarRepository.save(calendar);
 
-        CalendarUser calendarUser = CalendarUser.builder()
-                .calendar(calendar)
-                .user(user)
-                .build();
-
+        CalendarUser calendarUser = new CalendarUser(calendar, user);
         calendarUserRepository.save(calendarUser);
 
-        return CalendarResponseDto.builder()
-                .title(calendar.getTitle())
-                .description(calendar.getDescription())
-                .startDate(calendar.getStartDate())
-                .endDate(calendar.getEndDate())
-                .location(calendar.getLocation())
-                .build();
+        return new CalendarResponseDto(calendar);
     }
 
     @Transactional
@@ -64,16 +54,8 @@ public class CalendarService {
         List<Calendar> calendars = calendarRepository.findAll();
 
         return calendars.stream()
-                .map(calendar -> CalendarResponseDto.builder()
-                        .id(calendar.getId())
-                        .title(calendar.getTitle())
-                        .description(calendar.getDescription())
-                        .location(calendar.getLocation())
-                        .startDate(calendar.getStartDate())
-                        .endDate(calendar.getEndDate())
-                        .build()
-                )
-                .collect(Collectors.toList());
+                .map(CalendarResponseDto::new)
+                .toList();
     }
 
     @Transactional
@@ -81,15 +63,41 @@ public class CalendarService {
         Calendar calendar = calendarRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_CALENDAR));
 
-        return CalendarResponseDto.builder()
-                .id(calendar.getId())  // ID 추가
-                .title(calendar.getTitle())
-                .description(calendar.getDescription())
-                .location(calendar.getLocation())
-                .startDate(calendar.getStartDate())
-                .endDate(calendar.getEndDate())
-                .build();
+        return new CalendarResponseDto(calendar);
     }
 
 
+    @Transactional
+    public CalendarResponseDto updateCalendarById(CalendarRequestDto calendarRequestDto, UserDetailsImpl userDetails, Long id) {
+        Calendar calendar = calendarRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_CALENDAR));
+
+        boolean isUserInCalendar = calendar.getCalendarUsers().stream()
+                .anyMatch(calendarUser -> calendarUser.getUser().getId().equals(userDetails.getUserId()));
+
+        if (!isUserInCalendar) {
+            throw new CustomException(ErrorCode.NO_CALENDAR_UPDATE_PERMISSION);
+        }
+
+        calendar.updateCalendar(calendarRequestDto);
+
+        return new CalendarResponseDto(calendar);
+    }
+
+    @Transactional
+    public CalendarResponseDto deleteCalendarById(UserDetailsImpl userDetails, Long id) {
+        Calendar calendar = calendarRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_CALENDAR));
+
+        boolean isUserInCalendar = calendar.getCalendarUsers().stream()
+                .anyMatch(calendarUser -> calendarUser.getUser().getId().equals(userDetails.getUserId()));
+
+        if (!isUserInCalendar) {
+            throw new CustomException(ErrorCode.NO_CALENDAR_DELETE_PERMISSION);
+        }
+
+        calendarRepository.delete(calendar);
+
+        return new CalendarResponseDto(calendar);
+    }
 }
