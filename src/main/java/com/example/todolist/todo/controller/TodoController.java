@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/todo")
+@RequestMapping("/todo/{calendarId}")
 @RequiredArgsConstructor
 public class TodoController {
 
     private final TodoService todoService;
 
-    @PostMapping("/{calendarId}/todo")
+    @PostMapping("todo")
     public ResponseEntity<CommonResponse<TodoResponseDto>> createTodo(
             @PathVariable Long calendarId,
             @RequestBody TodoRequestDto todoRequestDto) {
@@ -27,7 +27,7 @@ public class TodoController {
         return ResponseEntity.ok(new CommonResponse<>("할 일 생성 완료", 200, responseDto));
     }
 
-    @GetMapping("/{calendarId}/todos")
+    @GetMapping("/todos")
     public ResponseEntity<CommonResponse<List<TodoResponseDto>>> getTodos(@PathVariable Long calendarId) {
         List<TodoResponseDto> todos = todoService.getTodos(calendarId);
         return ResponseEntity.ok(new CommonResponse<>("할 일 목록 조회 완료", 200, todos));
