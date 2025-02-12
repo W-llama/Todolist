@@ -9,8 +9,8 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
-public class UserDetailsImpl implements UserDetails, Serializable {  // ✅ 직렬화 추가
-    private final Long userId;  // ✅ User 대신 ID만 저장
+public class UserDetailsImpl implements UserDetails, Serializable {
+    private final Long userId;
     private final String username;
     private final String password;
     private final Collection<? extends GrantedAuthority> authorities;
