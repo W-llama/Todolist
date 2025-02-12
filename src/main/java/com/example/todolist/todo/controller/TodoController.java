@@ -4,16 +4,17 @@ import com.example.todolist.global.dto.CommonResponse;
 import com.example.todolist.todo.dto.TodoRequestDto;
 import com.example.todolist.todo.dto.TodoResponseDto;
 import com.example.todolist.todo.service.TodoService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/calendar")
+@RequiredArgsConstructor
 public class TodoController {
 
-    @Autowired
-    private TodoService todoService;
+
+    private final TodoService todoService;
 
     @PostMapping("/{calendarId}/todo")
     public ResponseEntity<CommonResponse<TodoResponseDto>> maketodo(
