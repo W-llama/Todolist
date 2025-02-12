@@ -9,21 +9,19 @@ import com.example.todolist.calendar.repository.CalendarRepository;
 import com.example.todolist.calendar.repository.CalendarUserRepository;
 import com.example.todolist.user.entity.User;
 import com.example.todolist.user.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class CalendarService {
 
-    @Autowired
-    private CalendarRepository calendarRepository;
+    private final CalendarRepository calendarRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private CalendarUserRepository calendarUserRepository;
+    private final CalendarUserRepository calendarUserRepository;
 
     @Transactional
     public CalendarResponseDto makecalendar(CalendarRequestDto calendarRequestDto,  UserDetailsImpl userDetails) {

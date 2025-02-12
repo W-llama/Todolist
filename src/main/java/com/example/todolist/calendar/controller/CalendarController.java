@@ -5,7 +5,7 @@ import com.example.todolist.calendar.dto.CalendarRequestDto;
 import com.example.todolist.calendar.dto.CalendarResponseDto;
 import com.example.todolist.calendar.service.CalendarService;
 import com.example.todolist.global.dto.CommonResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/calendar")
+@RequiredArgsConstructor
 public class CalendarController {
 
-    @Autowired
-    private CalendarService calendarService;
+    private final CalendarService calendarService;
 
     @PostMapping
     public ResponseEntity<CommonResponse<CalendarResponseDto>> makecalendar(

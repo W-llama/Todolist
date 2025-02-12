@@ -7,6 +7,7 @@ import com.example.todolist.global.excetion.ErrorCode;
 import com.example.todolist.user.entity.User;
 import com.example.todolist.user.entity.UserRole;
 import com.example.todolist.user.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,19 +16,15 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.regex.Pattern;
 
 @Service
+@RequiredArgsConstructor
 public class SignupService {
 
     private static final Pattern PASSWORD_PATTERN = Pattern.compile(
             "^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,15}$"
     );
 
-    private UserRepository userRepository;
-    private PasswordEncoder passwordEncoder;
-
-    public SignupService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public SignupResponseDto signup(SignupRequestDto signupRequestDto) {

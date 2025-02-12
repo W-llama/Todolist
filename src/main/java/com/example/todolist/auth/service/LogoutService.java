@@ -8,18 +8,15 @@ import com.example.todolist.user.entity.User;
 import com.example.todolist.user.repository.UserRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class LogoutService {
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
-
-    public LogoutService(UserRepository userRepository, JwtUtil jwtUtil) {
-        this.userRepository = userRepository;
-        this.jwtUtil = jwtUtil;
-    }
 
     @Transactional
     public CommonResponse<Void> logout(HttpServletRequest request) {

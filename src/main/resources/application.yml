@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: Todolist
+  profiles:
+    active: dev
