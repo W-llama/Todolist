@@ -13,7 +13,7 @@
     import io.swagger.v3.oas.annotations.tags.Tag;
     import jakarta.servlet.http.HttpServletRequest;
     import jakarta.validation.Valid;
-    import org.springframework.beans.factory.annotation.Autowired;
+    import lombok.RequiredArgsConstructor;
     import org.springframework.http.HttpStatus;
     import org.springframework.http.ResponseEntity;
     import org.springframework.validation.BindingResult;
@@ -25,16 +25,14 @@
     @RestController
     @RequestMapping("/api/auth")
     @Tag(name = "Auth")
+    @RequiredArgsConstructor
     public class AuthController {
 
-        @Autowired
-        private SignupService signupService;
+        private final SignupService signupService;
 
-        @Autowired
-        private LoginService loginService;
+        private final LoginService loginService;
 
-        @Autowired
-        private LogoutService logoutService;
+        private final LogoutService logoutService;
 
         @PostMapping("/signup")
         @Operation(summary = "회원가입", description = "회원가입 기능")
@@ -52,18 +50,22 @@
 
         @PostMapping("/login")
         @Operation(summary = "로그인", description = "로그인 기능")
-        public ResponseEntity<CommonResponse> login(
+        public ResponseEntity<CommonResponse<LoginResponseDto>> login(
                 @RequestBody LoginRequestDto loginRequestDto
         ){
             try {
                 LoginResponseDto responseDto = loginService.login(loginRequestDto);
-                CommonResponse response = new CommonResponse<>("로그인 성공", 200, responseDto);
+                CommonResponse<LoginResponseDto> response = new CommonResponse<>("로그인 성공", 200, responseDto);
                 return ResponseEntity.ok(response);
+            } catch (IllegalArgumentException e) {
+                CommonResponse<LoginResponseDto> response = new CommonResponse<>("잘못된 요청입니다.", 400, null);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             } catch (Exception e) {
-                CommonResponse response = new CommonResponse<>("로그인 실패", 500, null);
-                return ResponseEntity.status(500).body(response);
+                CommonResponse<LoginResponseDto> response = new CommonResponse<>("서버 오류가 발생했습니다.", 500, null);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
             }
         }
+
 
         @PostMapping("/logout")
         @Operation(summary = "로그아웃", description = "로그아웃 기능")
