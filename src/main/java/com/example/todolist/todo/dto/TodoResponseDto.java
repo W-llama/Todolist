@@ -20,6 +20,7 @@ public class TodoResponseDto{
     private LocalDateTime startDate;
     private LocalDateTime dueDate;
     private String tag;
+    private boolean isCompleted;
 
     public TodoResponseDto(TodoLists todo) {
         this.id = todo.getId();
@@ -28,5 +29,6 @@ public class TodoResponseDto{
         this.tag = todo.getTag();
         this.startDate = todo.getStartTime();
         this.dueDate = todo.getDueTime();
+        this.isCompleted = todo.isCompleted();
     }
 }

@@ -40,11 +40,19 @@ public class TodoLists {
     @JoinColumn(name = "calendar_id", nullable = false)
     private Calendar calendar;
 
-    public void updateTodo(String title, String description, String tag, LocalDateTime startTime, LocalDateTime dueTime) {
+    @Column
+    private boolean isCompleted;
+
+    public void updateTodo(String title, String description, String tag, LocalDateTime startTime, LocalDateTime dueTime, boolean isCompleted) {
         if (title != null) this.title = title;
         if (description != null) this.description = description;
         if (tag != null) this.tag = tag;
         if (startTime != null) this.startTime = startTime;
         if (dueTime != null) this.dueTime = dueTime;
+        this.isCompleted = isCompleted;
+    }
+
+    public  void toggleCompleted() {
+        this.isCompleted = !this.isCompleted;
     }
 }

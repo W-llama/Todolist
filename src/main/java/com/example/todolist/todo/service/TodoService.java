@@ -28,6 +28,14 @@ public class TodoService {
         Calendar calendar = calendarRepository.findById(calendarId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_CALENDAR));
 
+        if(todoRequestDto.getStartDate().isBefore(calendar.getStartDate().atStartOfDay())){
+            throw new CustomException(ErrorCode.INVALID_TODO_START_DATE);
+        }
+
+        if(todoRequestDto.getDueDate().isAfter(calendar.getEndDate().atStartOfDay())){
+            throw new CustomException(ErrorCode.INVALID_TODO_DUE_DATE);
+        }
+
         TodoLists todoLists = TodoLists.builder()
                 .calendar(calendar)
                 .title(todoRequestDto.getTitle())
@@ -35,6 +43,7 @@ public class TodoService {
                 .tag(todoRequestDto.getTag())
                 .startTime(todoRequestDto.getStartDate())
                 .dueTime(todoRequestDto.getDueDate())
+                .isCompleted(false)
                 .build();
 
         todoRepository.save(todoLists);
@@ -77,7 +86,8 @@ public class TodoService {
                 todoRequestDto.getDescription(),
                 todoRequestDto.getTag(),
                 todoRequestDto.getStartDate(),
-                todoRequestDto.getDueDate()
+                todoRequestDto.getDueDate(),
+                todoRequestDto.getIsCompleted()
         );
 
         return new TodoResponseDto(todo);
