@@ -48,6 +48,15 @@ public class TodoController {
         return ResponseEntity.ok(new CommonResponse<>("할 일 수정 완료", 200, updatedTodo));
     }
 
+    @PutMapping("/todos/{todoId}/toggle")
+    public ResponseEntity<CommonResponse<TodoResponseDto>> toggleTodo(
+            @PathVariable Long todoId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        TodoResponseDto updatedTodoToggle = todoService.updatedTodoToggle(todoId, userDetails);
+        return ResponseEntity.ok(new CommonResponse<>("할 일 수정 완료", 200, updatedTodoToggle));
+    }
+
+
     @DeleteMapping("/deletetodo/{todoId}")
     public ResponseEntity<CommonResponse<Void>> deleteTodo(
             @PathVariable Long todoId,

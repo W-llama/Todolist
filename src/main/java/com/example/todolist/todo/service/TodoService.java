@@ -93,6 +93,16 @@ public class TodoService {
         return new TodoResponseDto(todo);
     }
 
+    public TodoResponseDto updatedTodoToggle(Long todoId, UserDetailsImpl userDetails) {
+        TodoLists todo = todoRepository.findById(todoId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_TODO));
+
+        todo.setCompleted(true);
+        todoRepository.save(todo);
+
+        return new TodoResponseDto(todo);
+    }
+
     @Transactional
     public void deleteTodo(Long todoId, UserDetailsImpl userDetails) {
         TodoLists todo = todoRepository.findById(todoId)

@@ -2,10 +2,7 @@ package com.example.todolist.todo.entity;
 
 import com.example.todolist.calendar.entity.Calendar;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -52,7 +49,11 @@ public class TodoLists {
         this.isCompleted = isCompleted;
     }
 
-    public  void toggleCompleted() {
+    public void toggleCompleted() {
         this.isCompleted = !this.isCompleted;
+    }
+
+    public void setCompleted(boolean isCompleted) {
+        this.isCompleted = isCompleted;
     }
 }
