@@ -97,6 +97,13 @@ public class TodoService {
         TodoLists todo = todoRepository.findById(todoId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_TODO));
 
+        boolean isUserInCalendar = todo.getCalendar().getCalendarUsers().stream()
+                .anyMatch(calendarUser -> calendarUser.getUser().getId().equals(userDetails.getUserId()));
+
+        if (!isUserInCalendar) {
+            throw new CustomException(ErrorCode.NO_TODO_UPDATE_PERMISSION);
+        }
+
         todo.setCompleted(true);
         todoRepository.save(todo);
 
