@@ -43,7 +43,8 @@ public class LoginService {
 
 
         if (loginUser.getTokenStore() == null) {
-            loginUser.setTokenStore(new TokenStore(refreshToken));
+            TokenStore tokenStore = new TokenStore(refreshToken, loginUser);
+            loginUser.setTokenStore(tokenStore);
         } else {
             loginUser.getTokenStore().setRefreshToken(refreshToken);
         }

@@ -71,7 +71,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .refreshToken(refreshToken)
                 .build();
 
-        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, "Bearer " + accessToken); // "Bearer " 추가
+        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken);
         responseSetting(response, HttpServletResponse.SC_OK, loginResponseDto);
     }
 

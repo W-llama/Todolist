@@ -35,8 +35,15 @@ public class User extends Timestamp {
     private UserRole role;
 
     @Setter
-    @Embedded
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private TokenStore tokenStore;
+
+    public void setTokenStore(TokenStore tokenStore) {
+        this.tokenStore = tokenStore;
+        if (tokenStore != null) {
+            tokenStore.setUser(this);
+        }
+    }
 
     public void clearRefreshToken() {
         if (this.tokenStore != null) {

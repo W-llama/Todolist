@@ -28,6 +28,14 @@ public class TodoService {
         Calendar calendar = calendarRepository.findById(calendarId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_CALENDAR));
 
+        if(todoRequestDto.getStartDate().isBefore(calendar.getStartDate().atStartOfDay())){
+            throw new CustomException(ErrorCode.INVALID_TODO_START_DATE);
+        }
+
+        if(todoRequestDto.getDueDate().isAfter(calendar.getEndDate().atStartOfDay())){
+            throw new CustomException(ErrorCode.INVALID_TODO_DUE_DATE);
+        }
+
         TodoLists todoLists = TodoLists.builder()
                 .calendar(calendar)
                 .title(todoRequestDto.getTitle())
@@ -35,6 +43,7 @@ public class TodoService {
                 .tag(todoRequestDto.getTag())
                 .startTime(todoRequestDto.getStartDate())
                 .dueTime(todoRequestDto.getDueDate())
+                .isCompleted(false)
                 .build();
 
         todoRepository.save(todoLists);
@@ -77,8 +86,26 @@ public class TodoService {
                 todoRequestDto.getDescription(),
                 todoRequestDto.getTag(),
                 todoRequestDto.getStartDate(),
-                todoRequestDto.getDueDate()
+                todoRequestDto.getDueDate(),
+                todoRequestDto.getIsCompleted()
         );
+
+        return new TodoResponseDto(todo);
+    }
+
+    public TodoResponseDto updatedTodoToggle(Long todoId, UserDetailsImpl userDetails) {
+        TodoLists todo = todoRepository.findById(todoId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_TODO));
+
+        boolean isUserInCalendar = todo.getCalendar().getCalendarUsers().stream()
+                .anyMatch(calendarUser -> calendarUser.getUser().getId().equals(userDetails.getUserId()));
+
+        if (!isUserInCalendar) {
+            throw new CustomException(ErrorCode.NO_TODO_UPDATE_PERMISSION);
+        }
+
+        todo.setCompleted(true);
+        todoRepository.save(todo);
 
         return new TodoResponseDto(todo);
     }

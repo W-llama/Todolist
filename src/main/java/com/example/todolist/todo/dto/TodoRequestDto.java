@@ -16,4 +16,9 @@ public class TodoRequestDto {
     private LocalDateTime startDate;
     private LocalDateTime dueDate;
     private String tag;
+    private boolean isCompleted;
+
+    public boolean getIsCompleted() {
+        return isCompleted;
+    }
 }
