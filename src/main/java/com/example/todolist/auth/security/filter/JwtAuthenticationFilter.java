@@ -3,6 +3,7 @@ package com.example.todolist.auth.security.filter;
 import com.example.todolist.auth.dto.LoginRequestDto;
 import com.example.todolist.auth.dto.LoginResponseDto;
 import com.example.todolist.auth.security.jwt.JwtUtil;
+import com.example.todolist.global.dto.CommonResponse;
 import com.example.todolist.global.excetion.CustomException;
 import com.example.todolist.global.excetion.ErrorCode;
 import com.example.todolist.user.entity.TokenStore;
@@ -66,14 +67,16 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         saveRefreshToken(user, refreshToken);
 
-        LoginResponseDto loginResponseDto = LoginResponseDto.builder()
-                .AccessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
+        CommonResponse<LoginResponseDto> responseDto = new CommonResponse<>(
+                "로그인 성공",
+                200,
+                new LoginResponseDto(accessToken, refreshToken)
+        );
 
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken);
-        responseSetting(response, HttpServletResponse.SC_OK, loginResponseDto);
+        responseSetting(response, HttpServletResponse.SC_OK, responseDto);
     }
+
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
