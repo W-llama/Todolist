@@ -7,11 +7,11 @@ import lombok.Getter;
 @Builder
 public class LoginResponseDto {
 
-    private String AccessToken;
+    private String accessToken;
     private String refreshToken;
 
     public LoginResponseDto(String accessToken, String refreshToken) {
-        this.AccessToken = accessToken;
+        this.accessToken = accessToken;
         this.refreshToken = refreshToken;
     }
 }

@@ -52,20 +52,21 @@ public class AuthController {
     @Operation(summary = "로그인", description = "로그인 기능")
     public ResponseEntity<CommonResponse<LoginResponseDto>> login(
             @RequestBody LoginRequestDto loginRequestDto
-    ){
+    ) {
         try {
             LoginResponseDto responseDto = loginService.login(loginRequestDto);
-            CommonResponse<LoginResponseDto> response = new CommonResponse<>("로그인 성공", 200, responseDto);
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(new CommonResponse<>("로그인 성공", 200, responseDto));
+        } catch (CustomException e) {
+            return ResponseEntity.status(e.getStatusCode())
+                    .body(new CommonResponse<>(e.getMessage(), e.getStatusCode().value(), null));
         } catch (IllegalArgumentException e) {
-            CommonResponse<LoginResponseDto> response = new CommonResponse<>("잘못된 요청입니다.", 400, null);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new CommonResponse<>("잘못된 요청입니다.", 400, null));
         } catch (Exception e) {
-            CommonResponse<LoginResponseDto> response = new CommonResponse<>("서버 오류가 발생했습니다.", 500, null);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CommonResponse<>("서버 오류가 발생했습니다.", 500, null));
         }
     }
-
 
     @PostMapping("/logout")
     @Operation(summary = "로그아웃", description = "로그아웃 기능")
@@ -74,11 +75,11 @@ public class AuthController {
             CommonResponse<Void> response = logoutService.logout(request);
             return ResponseEntity.ok(response);
         } catch (CustomException e) {
-            CommonResponse<Void> response = new CommonResponse<>(e.getMessage(), e.getStatusCode().value(), null);
-            return ResponseEntity.status(e.getStatusCode()).body(response);
+            return ResponseEntity.status(e.getStatusCode())
+                    .body(new CommonResponse<>(e.getMessage(), e.getStatusCode().value(), null));
         } catch (Exception e) {
-            CommonResponse<Void> response = new CommonResponse<>("로그아웃 실패", HttpStatus.INTERNAL_SERVER_ERROR.value(), null);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CommonResponse<>("로그아웃 실패", HttpStatus.INTERNAL_SERVER_ERROR.value(), null));
         }
     }
 }
