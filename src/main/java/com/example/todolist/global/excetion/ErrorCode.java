@@ -30,12 +30,14 @@ public enum ErrorCode {
     NOT_FOUND_CALENDAR(HttpStatus.NOT_FOUND,"해당 일정이 존재하지 않습니다: " ),
     NO_CALENDAR_UPDATE_PERMISSION(HttpStatus.UNAUTHORIZED,"일정 수정 권한이 없습니다." ),
     NO_CALENDAR_DELETE_PERMISSION(HttpStatus.UNAUTHORIZED,"일정 삭제 권한이 없습니다." ),
+    UNAUTHORIZED_ACCESS(HttpStatus.UNAUTHORIZED,"일정 조회 권한이 없습니다."),
 
     NOT_FOUND_TODO(HttpStatus.FORBIDDEN,"존재하지 않은 할 일입니다." ),
     NO_TODO_UPDATE_PERMISSION(HttpStatus.UNAUTHORIZED,"할일 수정 권한이 없습니다." ),
     NO_TODO_DELETE_PERMISSION(HttpStatus.UNAUTHORIZED,"할일 수정 권한이 없습니다." ),
     INVALID_TODO_START_DATE(HttpStatus.UNAUTHORIZED, "유효 하지 않은 시작일 입니다."),
-    INVALID_TODO_DUE_DATE(HttpStatus.UNAUTHORIZED, "유효 하지 않은 마감일 입니다.");
+    INVALID_TODO_DUE_DATE(HttpStatus.UNAUTHORIZED, "유효 하지 않은 마감일 입니다."),
+;
     private final HttpStatus status;
     private final String message;
 }

@@ -48,21 +48,30 @@ public class CalendarService {
     }
 
     @Transactional
-    public List<CalendarResponseDto> getCalendar() {
-        List<Calendar> calendars = calendarRepository.findAll();
+    public List<CalendarResponseDto> getCalendar(Long userId) {
 
-        return calendars.stream()
-                .map(CalendarResponseDto::new)
+        List<CalendarUser> calendarUsers = calendarUserRepository.findByUser_Id(userId);
+
+        return calendarUsers.stream()
+                .map(calendarUser -> new CalendarResponseDto(calendarUser.getCalendar()))
                 .toList();
     }
 
     @Transactional
-    public CalendarResponseDto getCalendarById(Long id) {
+    public CalendarResponseDto getCalendarById(Long id, Long userId) {
         Calendar calendar = calendarRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_CALENDAR));
 
+        boolean isUserAuthorized = calendar.getCalendarUsers().stream()
+                .anyMatch(calendarUser -> calendarUser.getUser().getId().equals(userId));
+
+        if (!isUserAuthorized) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_ACCESS);
+        }
+
         return new CalendarResponseDto(calendar);
     }
+
 
 
     @Transactional

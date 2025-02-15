@@ -30,16 +30,20 @@ public class CalendarController {
 
     @GetMapping("/readcalendar")
     public ResponseEntity<CommonResponse<List<CalendarResponseDto>>> readCalendar(
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ){
-        List<CalendarResponseDto> responseDto =calendarService.getCalendar();
+        Long userId = userDetails.getUserId();
+        List<CalendarResponseDto> responseDto =calendarService.getCalendar(userId);
         return ResponseEntity.ok(new CommonResponse<>("일정 조회 완료",200, responseDto));
     }
 
     @GetMapping("/readcalendar/{id}")
     public ResponseEntity<CommonResponse<CalendarResponseDto>> readCalendarById(
-            @PathVariable Long id
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ){
-        CalendarResponseDto response = calendarService.getCalendarById(id);
+        Long userId = userDetails.getUserId();
+        CalendarResponseDto response = calendarService.getCalendarById(id, userId);
         return ResponseEntity.ok(new CommonResponse<>("일정 조회 완료",200, response));
     }
 
