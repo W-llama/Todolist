@@ -24,9 +24,23 @@ public class CalendarUser {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private InviteStatus inviteStatus = InviteStatus.PENDING;
+
     public CalendarUser(Calendar calendar, User user) {
         this.calendar = calendar;
         this.user = user;
+    }
+
+    public CalendarUser(Calendar calendar, User invitedUser, InviteStatus inviteStatus) {
+        this.calendar = calendar;
+        this.user = invitedUser;
+        this.inviteStatus = inviteStatus;
+    }
+
+    public void updateInviteStatus(InviteStatus status) {
+        this.inviteStatus = status;
     }
 }
 
