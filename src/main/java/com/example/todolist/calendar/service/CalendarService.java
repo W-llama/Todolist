@@ -5,6 +5,7 @@ import com.example.todolist.calendar.dto.CalendarRequestDto;
 import com.example.todolist.calendar.dto.CalendarResponseDto;
 import com.example.todolist.calendar.entity.Calendar;
 import com.example.todolist.calendar.entity.CalendarUser;
+import com.example.todolist.calendar.entity.InviteStatus;
 import com.example.todolist.calendar.repository.CalendarRepository;
 import com.example.todolist.calendar.repository.CalendarUserRepository;
 import com.example.todolist.global.excetion.CustomException;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -41,7 +43,7 @@ public class CalendarService {
 
         calendarRepository.save(calendar);
 
-        CalendarUser calendarUser = new CalendarUser(calendar, user);
+        CalendarUser calendarUser = new CalendarUser(calendar, user, InviteStatus.ACCEPTED);
         calendarUserRepository.save(calendarUser);
 
         return new CalendarResponseDto(calendar);
@@ -49,13 +51,16 @@ public class CalendarService {
 
     @Transactional
     public List<CalendarResponseDto> getCalendar(Long userId) {
+        List<CalendarUser> ownedCalendars = calendarUserRepository.findByUser_Id(userId);
 
-        List<CalendarUser> calendarUsers = calendarUserRepository.findByUser_Id(userId);
+        List<CalendarUser> acceptedInvites = calendarUserRepository.findByUser_IdAndInviteStatus(userId, InviteStatus.ACCEPTED);
 
-        return calendarUsers.stream()
-                .map(calendarUser -> new CalendarResponseDto(calendarUser.getCalendar()))
+        return Stream.concat(ownedCalendars.stream(), acceptedInvites.stream())
+                .distinct()
+                .map(calendarUser -> new CalendarResponseDto(calendarUser.getCalendar(), calendarUser.getInviteStatus()))
                 .toList();
     }
+
 
     @Transactional
     public CalendarResponseDto getCalendarById(Long id, Long userId) {
@@ -63,7 +68,8 @@ public class CalendarService {
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_CALENDAR));
 
         boolean isUserAuthorized = calendar.getCalendarUsers().stream()
-                .anyMatch(calendarUser -> calendarUser.getUser().getId().equals(userId));
+                .anyMatch(calendarUser -> calendarUser.getUser().getId().equals(userId) &&
+                        calendarUser.getInviteStatus() == InviteStatus.ACCEPTED);
 
         if (!isUserAuthorized) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_ACCESS);
@@ -71,8 +77,6 @@ public class CalendarService {
 
         return new CalendarResponseDto(calendar);
     }
-
-
 
     @Transactional
     public CalendarResponseDto updateCalendarById(CalendarRequestDto calendarRequestDto, UserDetailsImpl userDetails, Long id) {

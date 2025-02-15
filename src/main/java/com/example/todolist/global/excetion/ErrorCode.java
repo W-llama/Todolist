@@ -37,7 +37,13 @@ public enum ErrorCode {
     NO_TODO_DELETE_PERMISSION(HttpStatus.UNAUTHORIZED,"할일 수정 권한이 없습니다." ),
     INVALID_TODO_START_DATE(HttpStatus.UNAUTHORIZED, "유효 하지 않은 시작일 입니다."),
     INVALID_TODO_DUE_DATE(HttpStatus.UNAUTHORIZED, "유효 하지 않은 마감일 입니다."),
-;
+
+    IS_EXISTS(HttpStatus.BAD_REQUEST,"이미 초대된 사용자입니다" ),
+    NOT_FOUND_INVITE(HttpStatus.NOT_FOUND, "초대 정보를 찾을 수 없습니다."),
+    ALREADY_RESPONDED(HttpStatus.BAD_REQUEST, "이미 응답한 초대입니다."),
+    CANNOT_CANCEL(HttpStatus.BAD_REQUEST, "수락/거절된 초대는 취소할 수 없습니다.");
+
+    ;
     private final HttpStatus status;
     private final String message;
 }
