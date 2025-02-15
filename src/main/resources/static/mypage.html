@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MyPage - 캘린더 및 할 일 관리</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">MyPage</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <button class="btn btn-outline-danger" onclick="logout()">로그아웃</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-5">
+    <h2 class="text-center">📅 내 캘린더</h2>
+
+    <!-- 캘린더 목록 -->
+    <table class="table table-bordered mt-4">
+        <thead class="table-light">
+        <tr>
+            <th>#</th>
+            <th>캘린더 제목</th>
+            <th>기간</th>
+            <th>장소</th>
+            <th>관리</th>
+        </tr>
+        </thead>
+        <tbody id="calendar-list">
+        <!-- 캘린더 목록이 여기에 동적으로 추가됨 -->
+        </tbody>
+    </table>
+
+    <!-- 캘린더 추가 버튼 -->
+    <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#calendarModal"
+            onclick="openCalendarModal()">+ 캘린더 추가
+    </button>
+
+    <!-- 캘린더 관리 모달 -->
+    <div class="modal fade" id="calendarModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel">📅 캘린더 관리</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="calendar-id">
+                    <div class="mb-3">
+                        <label for="calendar-title" class="form-label">캘린더 제목</label>
+                        <input type="text" class="form-control" id="calendar-title" placeholder="캘린더 제목 입력">
+                    </div>
+                    <div class="mb-3">
+                        <label for="calendar-description" class="form-label">설명</label>
+                        <input type="text" class="form-control" id="calendar-description" placeholder="설명 입력">
+                    </div>
+                    <div class="mb-3">
+                        <label for="calendar-location" class="form-label">위치</label>
+                        <input type="text" class="form-control" id="calendar-location" placeholder="위치 입력">
+                    </div>
+                    <div class="mb-3">
+                        <label for="calendar-startDate" class="form-label">시작 날짜</label>
+                        <input type="date" class="form-control" id="calendar-startDate">
+                    </div>
+                    <div class="mb-3">
+                        <label for="calendar-endDate" class="form-label">종료 날짜</label>
+                        <input type="date" class="form-control" id="calendar-endDate">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="saveCalendar()">저장</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ✅ JavaScript 코드 추가 -->
+<script>
+    let calendars = [];
+    let todos = [];
+
+    document.addEventListener("DOMContentLoaded", fetchCalendars);
+
+    function apiFetch(url, method, body = null) {
+        let token = localStorage.getItem("accessToken") || "";
+
+        if (!token.startsWith("Bearer ")) {
+            token = "Bearer " + token;
+        }
+
+        const headers = {
+            "Content-Type": "application/json",
+            "Authorization": token
+        };
+
+        console.log(`🚀 API 요청: ${method} ${url}`);
+        console.log("📌 Headers:", headers);
+        console.log("📌 Body:", body);
+
+        return fetch(url, {
+            method,
+            headers,
+            body: body ? JSON.stringify(body) : null
+        }).then(response => {
+            console.log("📌 응답 상태 코드:", response.status);
+            return response.json();
+        });
+    }
+
+    function fetchCalendars() {
+        apiFetch("/api/calendar/readcalendar", "GET")
+            .then(data => {
+                calendars = data.result;
+                renderCalendarList();
+            })
+            .catch(error => console.error("Error fetching calendars:", error));
+    }
+
+    function openCalendarModal(id = null) {
+        console.log("🛠 수정 버튼 클릭됨, 캘린더 ID:", id);
+
+        const modalElement = document.getElementById('calendarModal');
+        if (!modalElement) {
+            console.error("❌ 모달을 찾을 수 없습니다!");
+            return;
+        }
+
+        const modal = new bootstrap.Modal(modalElement);
+
+        if (id) {
+            // 캘린더 목록이 비어있을 경우 오류 방지
+            if (!calendars || calendars.length === 0) {
+                console.error("❌ 캘린더 목록이 비어 있습니다!");
+                return;
+            }
+
+            const calendar = calendars.find(cal => String(cal.id) === String(id));
+            if (!calendar) {
+                console.error("❌ 해당 캘린더를 찾을 수 없습니다! 캘린더 목록:", calendars);
+                return;
+            }
+
+            console.log("📌 불러온 캘린더 데이터:", calendar);
+
+            document.getElementById('calendar-id').value = calendar.id;
+            document.getElementById('calendar-title').value = calendar.title;
+            document.getElementById('calendar-description').value = calendar.description;
+            document.getElementById('calendar-location').value = calendar.location;
+            document.getElementById('calendar-startDate').value = calendar.startDate;
+            document.getElementById('calendar-endDate').value = calendar.endDate;
+        } else {
+            console.log("📌 새 캘린더 추가 모드");
+            document.getElementById('calendar-id').value = "";
+            document.getElementById('calendar-title').value = "";
+            document.getElementById('calendar-description').value = "";
+            document.getElementById('calendar-location').value = "";
+            document.getElementById('calendar-startDate').value = "";
+            document.getElementById('calendar-endDate').value = "";
+        }
+
+        modal.show();
+    }
+
+
+    function saveCalendar() {
+        const id = document.getElementById('calendar-id').value;
+        const requestData = {
+            title: document.getElementById('calendar-title').value,
+            description: document.getElementById('calendar-description').value,
+            location: document.getElementById('calendar-location').value,
+            startDate: document.getElementById('calendar-startDate').value,
+            endDate: document.getElementById('calendar-endDate').value
+        };
+
+        apiFetch(id ? `/api/calendar/updatecalendar/${id}` : "/api/calendar", id ? "PUT" : "POST", requestData)
+            .then(() => fetchCalendars())
+            .catch(error => console.error("Error saving calendar:", error));
+
+        bootstrap.Modal.getInstance(document.getElementById('calendarModal')).hide();
+    }
+
+    function deleteCalendar(id) {
+        console.log("🛠 삭제할 캘린더 ID:", id);
+        if (!id) {
+            console.error("❌ 캘린더 ID가 없습니다!");
+            return;
+        }
+        apiFetch(`/api/calendar/deletecalendar/${id}`, "DELETE")
+            .then(() => {
+                console.log("🗑 삭제 완료!");
+                fetchCalendars();
+            })
+            .catch(error => console.error("❌ 삭제 중 오류 발생:", error));
+    }
+
+
+    function renderCalendarList() {
+        const tbody = document.getElementById('calendar-list');
+        tbody.innerHTML = "";
+
+        calendars.forEach((calendar, index) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+            <td>${index + 1}</td>
+            <td><a href="#" onclick="fetchTodos('${calendar.id}')">${calendar.title}</a></td>
+            <td>${calendar.startDate} ~ ${calendar.endDate}</td>
+            <td>${calendar.location}</td>
+            <td>
+                <button class="btn btn-warning btn-sm" onclick="openCalendarModal('${calendar.id}')">✏ 수정</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteCalendar('${calendar.id}')">🗑 삭제</button>
+            </td>
+
+        `;
+            tbody.appendChild(row);
+        });
+    }
+
+    function logout() {
+        localStorage.removeItem("accessToken");
+        alert("로그아웃 되었습니다.");
+        window.location.href = "/index.html";
+    }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -61,6 +61,11 @@ public class SecurityConfig {
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET).permitAll()
+                        .requestMatchers(HttpMethod.POST).permitAll()
+                        .requestMatchers(HttpMethod.PUT).permitAll()
+                        .requestMatchers(HttpMethod.DELETE).permitAll()
+                        .requestMatchers("/api/calendar/**").permitAll()
+                        .requestMatchers("/api/*/todo/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/api-docs/**", "/swagger-resources/**").permitAll()
                         .anyRequest().authenticated()
         );
