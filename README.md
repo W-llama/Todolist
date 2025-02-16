@@ -49,11 +49,14 @@ mysql -u root -p todo < todo.sql
 - Lombok
   - java 코드에서 반복적으로 사용하는 코드를 줄여주는 라이브러리를 사용했습니다. 이 라이브러리는 어노테이션 기반으로 Getter, Setter, Builder, NoArgsConstructor, AllArgsConstructor, RequiredArgsConstructor 을 사용하여 코드의 가독성을 높이고 유지보수성을 늘렸습니다.
     특히, @Builder 패턴을 자주 활용하여 객체 생성 시 코드의 직관성을 높이고, 불필요한 생성자 오버로딩을 줄일 수 있도록 하였습니다.
+## API 명세서
 
-## BackEnd Test
-아직 프론트 개발이 완료되지 않은 상태이므로 미완성 된 부분의 테스트는 Swagger를 통해 진행 부탁드리겠습니다.
+![swaggerapi명세서](https://github.com/user-attachments/assets/eb78c6fc-1ecf-4229-97f9-2c27e09011f1)
 
-###진행완료
+## Test Case
+테스트 케이스에 대한 자세한 내용은 [Test Case Documentation.md](Test%20Case%20Documentation.md) 문서를 참고해 주세요.
+
+### 진행완료
 - BackEnd
   - Auth : 로그인, 회원가입, 로그아웃 구현 완료
   - Calendar : CRUD, 초대( 초대, 승인, 거절)
@@ -63,6 +66,5 @@ mysql -u root -p todo < todo.sql
   - Calendar : CRUD, 초대 (초대하기)
 
 
-## Test Case
-테스트 케이스에 대한 자세한 내용은 [Test Case Documentation.md](Test%20Case%20Documentation.md) 문서를 참고해 주세요.
+
 
