@@ -55,11 +55,20 @@ public class CalendarService {
 
         List<CalendarUser> acceptedInvites = calendarUserRepository.findByUser_IdAndInviteStatus(userId, InviteStatus.ACCEPTED);
 
-        return Stream.concat(ownedCalendars.stream(), acceptedInvites.stream())
+        List<CalendarUser> pendingInvites = calendarUserRepository.findByUser_IdAndInviteStatus(userId, InviteStatus.PENDING);
+
+        return Stream.concat(
+                        Stream.concat(
+                                ownedCalendars.stream(),
+                                acceptedInvites.stream()
+                        ),
+                        pendingInvites.stream()
+                )
                 .distinct()
                 .map(calendarUser -> new CalendarResponseDto(calendarUser.getCalendar(), calendarUser.getInviteStatus()))
                 .toList();
     }
+
 
 
     @Transactional
