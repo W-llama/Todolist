@@ -86,6 +86,48 @@
             </div>
         </div>
     </div>
+
+</div>
+<div class="container mt-5">
+    <h2 class="text-center mt-5">📩 초대받은 일정</h2>
+    <table class="table table-bordered mt-4">
+        <thead class="table-light">
+        <tr>
+            <th>#</th>
+            <th>일정 제목</th>
+            <th>기간</th>
+            <th>장소</th>
+            <th>관리</th>
+        </tr>
+        </thead>
+        <tbody id="invited-calendar-list">
+        <!-- 초대받은 일정이 여기에 동적으로 추가됨 -->
+        </tbody>
+    </table>
+
+
+    <!-- 캘린더 관리 모달 -->
+    <div class="modal fade" id="inviteModal" tabindex="-1" aria-labelledby="inviteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="inviteModalLabel">📧 사용자 초대</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="invite-calendar-id">
+                    <div class="mb-3">
+                        <label for="invite-email" class="form-label">초대할 이메일</label>
+                        <input type="email" class="form-control" id="invite-email" placeholder="이메일 입력">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="sendInvite()">초대 보내기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <!-- ✅ JavaScript 코드 추가 -->
@@ -115,20 +157,55 @@
             method,
             headers,
             body: body ? JSON.stringify(body) : null
-        }).then(response => {
-            console.log("📌 응답 상태 코드:", response.status);
-            return response.json();
-        });
+        })
+            .then(response => {
+                console.log("📌 응답 상태 코드:", response.status);
+                console.log("📌 응답 헤더:", response.headers.get("content-type"));
+
+                const contentType = response.headers.get("content-type");
+
+                // ✅ JSON 응답인지 확인 후 처리
+                if (contentType && contentType.includes("application/json")) {
+                    return response.json();
+                } else {
+                    return response.text().then(text => {
+                        console.warn("⚠️ 예상치 못한 응답 형식, 원본 응답:", text);
+                        throw new Error("서버 응답이 JSON 형식이 아닙니다.");
+                    });
+                }
+            })
+            .catch(error => {
+                console.error("❌ API 호출 실패:", error);
+                throw error;
+            });
     }
 
     function fetchCalendars() {
         apiFetch("/api/calendar/readcalendar", "GET")
             .then(data => {
-                calendars = data.result;
+                console.log("📅 전체 일정 데이터:", data); // API 응답 확인
+
+                if (!data.result || data.result.length === 0) {
+                    console.error("❌ API에서 받은 일정 데이터가 없습니다.");
+                    return;
+                }
+
+                // 첫 번째 데이터 구조 확인
+                console.log("🔍 첫 번째 일정 객체 구조:", data.result[0]);
+
+                // ✅ inviteStatus 기반 필터링
+                calendars = data.result.filter(calendar => calendar.inviteStatus === "ACCEPTED");
+                invitedCalendars = data.result.filter(calendar => calendar.inviteStatus === "PENDING");
+
+                console.log("✅ 필터링된 ACCEPTED 일정:", calendars);
+                console.log("✅ 필터링된 PENDING 일정:", invitedCalendars);
+
                 renderCalendarList();
+                renderInvitedCalendarList();
             })
             .catch(error => console.error("Error fetching calendars:", error));
     }
+
 
     function openCalendarModal(id = null) {
         console.log("🛠 수정 버튼 클릭됨, 캘린더 ID:", id);
@@ -142,7 +219,6 @@
         const modal = new bootstrap.Modal(modalElement);
 
         if (id) {
-            // 캘린더 목록이 비어있을 경우 오류 방지
             if (!calendars || calendars.length === 0) {
                 console.error("❌ 캘린더 목록이 비어 있습니다!");
                 return;
@@ -175,7 +251,6 @@
         modal.show();
     }
 
-
     function saveCalendar() {
         const id = document.getElementById('calendar-id').value;
         const requestData = {
@@ -207,7 +282,6 @@
             .catch(error => console.error("❌ 삭제 중 오류 발생:", error));
     }
 
-
     function renderCalendarList() {
         const tbody = document.getElementById('calendar-list');
         tbody.innerHTML = "";
@@ -222,11 +296,109 @@
             <td>
                 <button class="btn btn-warning btn-sm" onclick="openCalendarModal('${calendar.id}')">✏ 수정</button>
                 <button class="btn btn-danger btn-sm" onclick="deleteCalendar('${calendar.id}')">🗑 삭제</button>
+                <button class="btn btn-info btn-sm" onclick="inviteUser('${calendar.id}')">📧 초대</button>
             </td>
-
         `;
             tbody.appendChild(row);
         });
+    }
+
+    function fetchInvitedCalendars(calendarId) {
+        console.log(`📌 fetchInvitedCalendars() 호출됨 - calendarId:`, calendarId);
+
+        if (!calendarId || calendarId === "undefined") {
+            console.error("❌ 유효하지 않은 calendarId:", calendarId);
+            return;
+        }
+
+        apiFetch(`/api/calendar/${calendarId}/invite/list`, "GET")
+            .then(data => {
+                console.log("📌 서버 응답 데이터:", data);
+
+                if (!data.result) {
+                    console.error("❌ 서버에서 받은 초대 데이터가 없습니다.");
+                    return;
+                }
+
+                invitedCalendars = data.result;
+                renderInvitedCalendarList();
+            })
+            .catch(error => console.error("❌ 초대받은 일정 목록을 불러오는 중 오류 발생:", error));
+    }
+
+    function inviteUser(calendarId) {
+        const username = prompt("초대할 사용자의 이름을 입력하세요:");
+        if (!username) return;
+
+        console.log(`📌 초대 요청 - calendarId: ${calendarId}, username: ${username}`);
+
+        apiFetch(`/api/calendar/${calendarId}/invite?username=${username}`, "POST")
+            .then(data => {
+                console.log("📌 API 응답 데이터:", data);
+
+                if (!data || typeof data !== "object") {
+                    throw new Error("서버 응답이 올바른 JSON 형식이 아닙니다.");
+                }
+
+                if (data.statusCode === 400) {
+                    throw new Error(data.message || "초대할 수 없는 사용자입니다.");
+                } else if (data.statusCode === 500) {
+                    throw new Error("서버 오류 발생: 관리자에게 문의하세요.");
+                }
+
+                alert("✅ 초대가 완료되었습니다!");
+            })
+            .catch(error => {
+                console.error("❌ 초대 실패:", error);
+                alert(`❌ 초대 실패: ${error.message}`);
+            });
+    }
+
+    function renderInvitedCalendarList() {
+        console.log("📩 초대받은 일정 렌더링 시작:", invitedCalendars);
+        const tbody = document.getElementById('invited-calendar-list');
+        tbody.innerHTML = "";
+
+        invitedCalendars.forEach((calendar, index) => {
+            if (calendar.inviteStatus !== "PENDING") return;
+
+            const row = document.createElement("tr");
+            row.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${calendar.title}</td>
+            <td>${calendar.startDate} ~ ${calendar.endDate}</td>
+            <td>${calendar.location || "미정"}</td>
+            <td>
+                <button class="btn btn-success btn-sm" onclick="respondToInvite('${calendar.inviteId}', 'ACCEPTED')">✔ 수락</button>
+                <button class="btn btn-danger btn-sm" onclick="respondToInvite('${calendar.inviteId}', 'DECLINED')">❌ 거부</button>
+            </td>
+        `;
+            tbody.appendChild(row);
+        });
+
+        console.log("📩 초대받은 일정 렌더링 완료");
+    }
+
+    function respondToInvite(inviteId, status) {
+        console.log(`📌 초대 상태 변경 요청: inviteId=${inviteId}, status=${status}`);
+
+        if (!inviteId || inviteId === "undefined" || inviteId === "null") {
+            console.error("❌ 유효하지 않은 inviteId:", inviteId);
+            alert("❌ 초대 ID가 올바르지 않습니다!");
+            return;
+        }
+
+        apiFetch(`/api/calendar/invite/${inviteId}?status=${status}`, "PUT")
+            .then(response => {
+                console.log("✅ 응답:", response);
+                alert(`✅ 상태가 ${status}로 변경되었습니다.`);
+                fetchInvitedCalendars();
+                fetchCalendars();
+            })
+            .catch(error => {
+                console.error("❌ 초대 응답 중 오류 발생:", error);
+                alert("❌ 상태 변경 실패!");
+            });
     }
 
     function logout() {

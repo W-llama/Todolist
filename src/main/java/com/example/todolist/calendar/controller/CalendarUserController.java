@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/calendar/{calendarId}/invite")
+@RequestMapping("/api/calendar")
 @RequiredArgsConstructor
 public class CalendarUserController {
 
     private final CalendarUserService calendarUserService;
 
-    @PostMapping
+    @PostMapping("{calendarId}/invite")
     public ResponseEntity<CommonResponse<CalendarUserResponseDto>> inviteUser(
             @PathVariable Long calendarId,
             @RequestParam String username
@@ -26,9 +26,8 @@ public class CalendarUserController {
         return ResponseEntity.ok(new CommonResponse<>("초대 성공",200,response));
     }
 
-    @PutMapping("/{inviteId}")
+    @PutMapping("invite/{inviteId}")
     public ResponseEntity<CommonResponse<CalendarUserResponseDto>> respondToInvite(
-            @PathVariable Long calendarId,
             @PathVariable Long inviteId,
             @RequestParam InviteStatus status
     ) {
@@ -36,7 +35,7 @@ public class CalendarUserController {
         return ResponseEntity.ok(new CommonResponse<>("초대 응답 완료", 200, response));
     }
 
-    @GetMapping("/list")
+    @GetMapping("/{calendarId}/invite/list")
     public ResponseEntity<CommonResponse<List<CalendarUserResponseDto>>> getInvitesByCalendar(
             @PathVariable Long calendarId
     ) {

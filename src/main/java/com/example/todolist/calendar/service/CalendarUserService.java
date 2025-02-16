@@ -52,19 +52,16 @@ public class CalendarUserService {
         CalendarUser invite = calendarUserRepository.findById(inviteId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_INVITE));
 
-        if (invite.getInviteStatus() != InviteStatus.PENDING) {
-            throw new CustomException(ErrorCode.ALREADY_RESPONDED);
-        }
-
         invite.updateInviteStatus(status);
+        calendarUserRepository.save(invite);
 
         return CalendarUserResponseDto.builder()
-                .id(invite.getId())
                 .calendarId(invite.getCalendar().getId())
                 .userId(invite.getUser().getId())
                 .status(invite.getInviteStatus())
                 .build();
     }
+
 
     @Transactional(readOnly = true)
     public List<CalendarUserResponseDto> getInvitesByCalendar(Long calendarId) {
