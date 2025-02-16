@@ -136,6 +136,8 @@
     let todos = [];
 
     document.addEventListener("DOMContentLoaded", fetchCalendars);
+    document.getElementById('calendarModal').removeAttribute('inert');
+
 
     function apiFetch(url, method, body = null) {
         let token = localStorage.getItem("accessToken") || "";
