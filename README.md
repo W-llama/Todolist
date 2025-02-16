@@ -57,4 +57,6 @@ docker run --name my-mysql -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=todo -p
 mysql -u root -p todo < todo.sql
 ```
 
-
+## Test Case
+테스트 케이스에 대한 자세한 내용은 아래 문서를 참고해 주세요.
+[Test Case Documentation.md](Test%20Case%20Documentation.md)
