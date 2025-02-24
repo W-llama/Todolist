@@ -69,8 +69,6 @@ public class CalendarService {
                 .toList();
     }
 
-
-
     @Transactional
     public CalendarResponseDto getCalendarById(Long id, Long userId) {
         Calendar calendar = calendarRepository.findById(id)
